@@ -2,22 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "Baskerville";
-  src:
-    local("Baskerville"),
-    url("/baskvl.woff") format("woff");
+:root {
+  --dark: #1b1b2b;
+  --superdark: #1b1b2b;
+  --light: #fbfbeb;
 }
 
 @font-face {
-  font-family: "Baskerville Normal";
+  font-family: 'Baskerville';
   src:
-    local("Baskerville Normal"),
-    url("/baskvl.woff") format("woff");
+    local('Baskerville'),
+    url('/baskvl.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Baskerville Normal';
+  src:
+    local('Baskerville Normal'),
+    url('/baskvl.woff') format('woff');
 }
 
 html {
-  background-color: #1b1b2b;
-  color: #fbfbeb;
-  font-family: "Baskerville Normal", "arial";
+  background-color: var(--dark);
+  color: var(--light);
+  font-family: 'Baskerville Normal', 'arial';
+}
+
+body {
+  min-width: 300px;
 }

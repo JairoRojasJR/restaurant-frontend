@@ -20,12 +20,26 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["react", "prettier"],
-  "ignorePatterns": ["next-env.d.ts"],
+  "plugins": [
+    "react",
+    "prettier"
+  ],
+  "ignorePatterns": [
+    "next-env.d.ts"
+  ],
   "rules": {
+    "prettier/prettier": "error",
     "react/react-in-jsx-scope": "off",
-    "jsx-quotes": ["error", "prefer-single"],
-    "react/jsx-curly-brace-presence": ["error", "never"],
-    "prettier/prettier": "error"
+    "jsx-quotes": [
+      "error",
+      "prefer-single"
+    ],
+    "react/jsx-curly-brace-presence": [
+      "error",
+      "never"
+    ],
+    "@typescript-eslint/space-before-function-paren": [
+      "off"
+    ]
   }
 }
