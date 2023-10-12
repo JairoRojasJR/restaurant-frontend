@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --dark: #1b1b2b;
-  --superdark: #1b1b2b;
-  --light: #fbfbeb;
-}
-
 @font-face {
   font-family: 'Baskerville';
   src:
@@ -23,9 +17,15 @@
 }
 
 html {
-  background-color: var(--dark);
-  color: var(--light);
+  @apply bg-dark;
+  @apply text-light;
   font-family: 'Baskerville Normal', 'arial';
+}
+
+input,
+select,
+option {
+  @apply bg-superdark;
 }
 
 body {
