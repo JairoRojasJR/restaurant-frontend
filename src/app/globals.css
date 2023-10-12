@@ -3,21 +3,31 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Baskerville";
+  font-family: 'Baskerville';
   src:
-    local("Baskerville"),
-    url("/baskvl.woff") format("woff");
+    local('Baskerville'),
+    url('/baskvl.woff') format('woff');
 }
 
 @font-face {
-  font-family: "Baskerville Normal";
+  font-family: 'Baskerville Normal';
   src:
-    local("Baskerville Normal"),
-    url("/baskvl.woff") format("woff");
+    local('Baskerville Normal'),
+    url('/baskvl.woff') format('woff');
 }
 
 html {
-  background-color: #1b1b2b;
-  color: #fbfbeb;
-  font-family: "Baskerville Normal", "arial";
+  @apply bg-dark;
+  @apply text-light;
+  font-family: 'Baskerville Normal', 'arial';
+}
+
+input,
+select,
+option {
+  @apply bg-superdark;
+}
+
+body {
+  min-width: 300px;
 }

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Sitio web oficial del Restaurante-SF'
 }
 
-export default function RootLayout ({
+export default function RootLayout({
   children
 }: {
   children: React.ReactNode

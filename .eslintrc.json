@@ -1,7 +1,7 @@
 {
   "env": {
     "browser": true,
-    "es2021": true,
+    "es2023": true,
     "node": true
   },
   "extends": [
@@ -16,16 +16,31 @@
     }
   },
   "parserOptions": {
-    "ecmaVersion": 2021,
+    "ecmaVersion": 2023,
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["react", "prettier"],
-  "ignorePatterns": ["next-env.d.ts"],
+  "plugins": [
+    "react",
+    "prettier"
+  ],
+  "ignorePatterns": [
+    "next-env.d.ts"
+  ],
   "rules": {
+    "prettier/prettier": "error",
     "react/react-in-jsx-scope": "off",
-    "jsx-quotes": ["error", "prefer-single"],
-    "react/jsx-curly-brace-presence": ["error", "never"],
-    "prettier/prettier": "error"
+    "jsx-quotes": [
+      "error",
+      "prefer-single"
+    ],
+    "react/jsx-curly-brace-presence": [
+      "error",
+      "never"
+    ],
+    "@typescript-eslint/space-before-function-paren": [
+      "off"
+    ],
+    "@typescript-eslint/no-misused-promises": "off"
   }
 }
