@@ -11,7 +11,6 @@ export async function POST(req: Request): Promise<NextResponse | undefined> {
     const name = body.get('name') as unknown as string
     const file = body.get('image') as unknown as File
     const order = body.get('order') as unknown as TPlate['order']
-    console.log(order)
 
     const blobName = createBlobName('plates/', file.name)
     const plate = new Plate<TPlate>({

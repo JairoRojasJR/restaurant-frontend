@@ -26,8 +26,7 @@ export default function Home(): JSX.Element {
       body: formData
     })
 
-    const res = await req.json()
-    console.log(res)
+    await req.json()
   }
 
   useEffect(() => {
