@@ -13,9 +13,6 @@ export const FormPlate: React.FC<Props> = ({ handleSubmit }: Props) => {
       onSubmit={handleSubmit}
       encType='multipart/form-data'
     >
-      <h3 className='rounded-sm border-2 border-violet p-2 text-center'>
-        Agregar plato al inventario
-      </h3>
       <section className='flex flex-col'>
         <label>Nombre del plato</label>
         <input className='border-b-2 border-violet' name='name' />
