@@ -17,6 +17,9 @@ const config: Config = {
         superdark: '#111121',
         light: '#fbfbeb',
         violet: '#6F32BE'
+      },
+      screens: {
+        ssm: '400px'
       }
     }
   },

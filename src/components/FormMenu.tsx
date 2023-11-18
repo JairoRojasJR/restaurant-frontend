@@ -5,7 +5,6 @@ interface Props {
 export const FormMenu: React.FC<Props> = ({ handleSubmit }: Props) => {
   return (
     <form className='flex flex-col gap-2 rounded-sm bg-superdark p-2' onSubmit={handleSubmit}>
-      <h3 className='rounded-sm border-2 border-violet p-2 text-center'>Agregar plato al menú</h3>
       <input name='status' defaultValue='Disponible' hidden />
       <section className='flex flex-col'>
         <label>Nombre del plato</label>

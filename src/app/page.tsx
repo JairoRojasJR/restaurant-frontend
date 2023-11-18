@@ -12,13 +12,23 @@ import { FormMenu } from '@/components/FormMenu'
 export default function Home(): JSX.Element {
   const { shopstatus, switchStatus } = useShopStatus()
   const { submitPlate } = usePlates()
-  const { menu, submitMenu, switchStatusMenu } = useMenu()
+  const { menu, submitMenu, switchStatusMenu, deletePlateFromMenu } = useMenu()
 
   return (
     <main className='flex min-h-screen justify-center p-8'>
       <div className='flex w-full max-w-xl flex-col gap-5'>
-        <FormPlate handleSubmit={submitPlate} />
-        <FormMenu handleSubmit={submitMenu} />
+        <details>
+          <summary className='rounded-sm border-2 border-violet bg-superdark p-2'>
+            Agregar plato al inventario
+          </summary>
+          <FormPlate handleSubmit={submitPlate} />
+        </details>
+        <details>
+          <summary className='rounded-sm border-2 border-violet bg-superdark p-2'>
+            Agregar plato al menú
+          </summary>
+          <FormMenu handleSubmit={submitMenu} />
+        </details>
         <div className='flex items-center justify-center gap-2 rounded-md bg-superdark px-8  py-2 font-bold italic'>
           <div className='relative h-9 w-9 shrink-0 object-cover'>
             <Image
@@ -38,7 +48,7 @@ export default function Home(): JSX.Element {
             {shopstatus}
           </span>
         </div>
-        <section className='flex flex-col gap-[2px] rounded-sm border-2 border-light bg-light'>
+        <section className='flex min-w-[240px] flex-col gap-[2px] rounded-sm border-2 border-light bg-light'>
           <h2 className='bg-superdark p-2 text-center font-bold'>Menú - 2.5$ Completo</h2>
           <PlateOrder title='Entrante - 1.5$ solo, sin segundo'>
             {menu.map(plateInMenu => {
@@ -49,6 +59,7 @@ export default function Home(): JSX.Element {
                   key={crypto.randomUUID()}
                   menu={plateInMenu}
                   switchStatus={switchStatusMenu}
+                  deletePlateFromMenu={deletePlateFromMenu}
                 />
               )
             })}
@@ -62,6 +73,7 @@ export default function Home(): JSX.Element {
                   key={crypto.randomUUID()}
                   menu={plateInMenu}
                   switchStatus={switchStatusMenu}
+                  deletePlateFromMenu={deletePlateFromMenu}
                 />
               )
             })}
