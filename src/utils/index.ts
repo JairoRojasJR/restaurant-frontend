@@ -2,6 +2,12 @@ import axios from 'axios'
 import { toast } from 'sonner'
 import { type SchemaError, type ResponseSchemaError } from '@/types/server'
 
+export const insertIdInUrl = (_id: string, path: string): string => {
+  const params = new URLSearchParams()
+  params.append('_id', _id)
+  return `${path}?${params.toString()}`
+}
+
 export const schemaError = (error: unknown): SchemaError[] | false => {
   if (
     axios.isAxiosError(error) &&
