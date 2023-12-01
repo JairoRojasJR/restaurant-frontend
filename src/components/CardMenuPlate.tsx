@@ -1,13 +1,13 @@
 import Image from 'next/image'
 import { BACKEND_STREAMING_IMAGE } from '@/globalVars'
 import { type Menu } from '@/types/server'
-import { TrashIcon } from './svg/Trash'
-import { type ModifyMenu } from '@/types/local'
+import { TrashIcon } from '@/icons/Trash'
+import type { MouseModifyMenu } from '@/types/local'
 
 interface Props {
   menu: Menu
-  switchStatus: ModifyMenu
-  deletePlateFromMenu: ModifyMenu
+  switchStatus: MouseModifyMenu
+  deletePlateFromMenu: MouseModifyMenu
 }
 
 export default function Plate({ menu, switchStatus, deletePlateFromMenu }: Props): JSX.Element {

@@ -4,14 +4,15 @@ import { addMenu, deleteMenu, getMenu, updateMenu } from '@/services/menu.servic
 import { getPlate } from '@/services/plate.service'
 import { getErrorMessage, toastErrorWhenSendingData } from '@/utils'
 import type { Menu, Plate } from '@/types/server'
-import { type ModifyMenu } from '@/types/local'
+import { type MouseModifyMenu } from '@/types/local'
 
 type PlatesInMenu = Menu[]
 interface UseMenu {
   menu: PlatesInMenu
   submitMenu: (e: React.FormEvent<HTMLFormElement>) => Promise<void>
-  switchStatusMenu: ModifyMenu
-  deletePlateFromMenu: ModifyMenu
+  switchStatusMenu: MouseModifyMenu
+  updatePlateFromMenu: (plate: Plate) => void
+  deletePlateFromMenu: MouseModifyMenu
 }
 
 type MappingKeysOnSubmitMenu = Pick<ElementsMenu, 'plate'> & Pick<ElementsPlate, 'name'>
@@ -42,6 +43,9 @@ export const useMenu = (): UseMenu => {
       const params = new URLSearchParams()
       params.set('name', plateName)
       const plateQuery = await getPlate(params)
+      if (Array.isArray(plateQuery)) {
+        throw new Error('[ERROR INTERNO] tipo de dato inesperado en getPlate')
+      }
 
       formData.set('plate', plateQuery._id)
       const plateAdded = await addMenu(formData)
@@ -66,11 +70,22 @@ export const useMenu = (): UseMenu => {
     }
   }
 
+  const updatePlateFromMenu: UseMenu['updatePlateFromMenu'] = async plate => {
+    try {
+      const updateds = await getMenu()
+      setMenu(updateds)
+      toast(`Plato [${plate.name}] actualizado del menú exitosamente`)
+    } catch (error) {
+      toast(getErrorMessage(error))
+    }
+  }
+
   const deletePlateFromMenu: UseMenu['deletePlateFromMenu'] = async (e, { _id }) => {
     e.stopPropagation()
     try {
-      await deleteMenu(_id)
+      const deletedPlateFromMenu = await deleteMenu(_id)
       setMenu(menu => menu.filter(current => current._id !== _id))
+      toast(`[Plato: ${deletedPlateFromMenu.plate.name}] eliminado del menú exitosamente`)
     } catch (error) {
       toastErrorWhenSendingData(error, elementsOnModifyMenu)
     }
@@ -86,5 +101,5 @@ export const useMenu = (): UseMenu => {
       })
   }, [])
 
-  return { menu, submitMenu, switchStatusMenu, deletePlateFromMenu }
+  return { menu, submitMenu, switchStatusMenu, updatePlateFromMenu, deletePlateFromMenu }
 }

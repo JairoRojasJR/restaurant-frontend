@@ -30,6 +30,8 @@
     "@typescript-eslint/space-before-function-paren": ["off"],
     "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/no-explicit-any": "error",
-    "react-hooks/exhaustive-deps": "off"
+    "react-hooks/exhaustive-deps": "off",
+    "@typescript-eslint/no-confusing-void-expression": "off",
+    "multiline-ternary": "off"
   }
 }
