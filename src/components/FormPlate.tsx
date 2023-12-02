@@ -1,3 +1,7 @@
+import { useSearchPlate } from '@/hooks/shearchPlate.hook'
+import { usePlateOptions } from '@/hooks/plateOptions.hook'
+import { AdminPlatesCards } from '@/components/AdminPlatesCards'
+import { type Props as CardInventoryProps } from '@/components/CardInventoryPlate'
 import { type FormModifyPlate } from '@/types/local'
 import type { Plate, PlateOrder as PlateOrderType } from '@/types/server'
 
@@ -58,25 +62,75 @@ export const FormAddPlate: React.FC<Props> = ({ handleSubmit }: Props) => {
   )
 }
 
-interface FormUpdatePlateProps {
+export interface FormUpdatePlateProps {
   plate: Plate
-  handleSubmit: FormModifyPlate
-  onCancel: () => void
+  runUpdate: FormModifyPlate
+  cancelUpdate: () => void
 }
 
 export const FormUpdatePlate: React.FC<FormUpdatePlateProps> = ({
   plate,
-  handleSubmit,
-  onCancel
+  runUpdate,
+  cancelUpdate
 }: FormUpdatePlateProps) => {
   return (
-    <FormPlate plate={plate} handleSubmit={async e => await handleSubmit(e, plate)}>
+    <FormPlate plate={plate} handleSubmit={async e => await runUpdate(e, plate)}>
       <div className='flex gap-2'>
         <button className='grow rounded-sm bg-emerald-400 py-2 text-dark'>Actualizar</button>
-        <button className='grow rounded-sm bg-red-400 py-2 text-dark' onClick={onCancel}>
+        <button className='grow rounded-sm bg-red-400 py-2 text-dark' onClick={cancelUpdate}>
           Cancelar
         </button>
       </div>
     </FormPlate>
+  )
+}
+
+interface FormSearchPlateProps {
+  plates: Plate[]
+  deletePlate: CardInventoryProps['deletePlate']
+  updatePlate: FormUpdatePlateProps['runUpdate']
+}
+
+export const FormSearchPlate: React.FC<FormSearchPlateProps> = ({
+  plates,
+  deletePlate,
+  updatePlate
+}: FormSearchPlateProps) => {
+  const { searching, shearchResults, panelStatus, openPanel, closePanel, onTyping } =
+    useSearchPlate(plates)
+  const plateOptions = usePlateOptions()
+  const { disableEditing } = plateOptions
+
+  const runUpdate: FormUpdatePlateProps['runUpdate'] = async (e, plate) => {
+    await updatePlate(e, plate)
+    disableEditing()
+  }
+
+  return (
+    <section className='flex flex-col gap-2 rounded-sm bg-superdark'>
+      <div className='relative m-auto w-full self-center'>
+        <input
+          className='w-full border-b-2 border-violet p-2'
+          name='plate'
+          placeholder='Buscar plato en el inventario'
+          autoComplete='off'
+          onFocus={() => searching.length > 0 && openPanel()}
+          onBlur={closePanel}
+          onChange={onTyping}
+        />
+        {panelStatus === 'open' && (
+          <aside className='absolute top-full z-10 my-2 flex max-h-[400px] w-full flex-col gap-2 rounded-sm bg-superdark p-2 outline outline-violet'>
+            {shearchResults.length === 0 && <span>No se encontró el plato</span>}
+            <AdminPlatesCards
+              plates={shearchResults}
+              platesOptions={plateOptions}
+              runUpdate={runUpdate}
+              deletePlate={deletePlate}
+              searching={searching}
+            />
+          </aside>
+        )}
+      </div>
+    </section>
   )
 }

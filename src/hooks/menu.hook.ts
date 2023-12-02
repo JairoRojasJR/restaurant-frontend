@@ -10,12 +10,13 @@ type PlatesInMenu = Menu[]
 interface UseMenu {
   menu: PlatesInMenu
   submitMenu: (e: React.FormEvent<HTMLFormElement>) => Promise<void>
+  submitMenuBySearchResult: (plateName: string) => Promise<void>
   switchStatusMenu: MouseModifyMenu
   updatePlateFromMenu: (plate: Plate) => void
   deletePlateFromMenu: MouseModifyMenu
 }
 
-type MappingKeysOnSubmitMenu = Pick<ElementsMenu, 'plate'> & Pick<ElementsPlate, 'name'>
+type MappingKeysOnSubmitMenu = Pick<ElementsMenu, 'plate' | 'status'> & Pick<ElementsPlate, 'name'>
 type MappingKeysOnModifyMenu = Pick<ElementsMenu, '_id' | 'status'>
 type ElementsPlate = {
   [T in keyof Plate]: string
@@ -25,8 +26,24 @@ type ElementsMenu = {
   [T in keyof Menu]: string
 }
 
+const getPlateByName = async (plateName: string): Promise<Plate> => {
+  const params = new URLSearchParams()
+  params.set('name', plateName)
+  const plateQuery = await getPlate(params)
+  if (Array.isArray(plateQuery)) {
+    throw new Error('[ERROR INTERNO] tipo de dato inesperado en getPlate')
+  }
+  return plateQuery
+}
+
 export const useMenu = (): UseMenu => {
   const [menu, setMenu] = useState<PlatesInMenu>([])
+
+  const addPlateQueryToMenu = async (formData: FormData): Promise<void> => {
+    const plateAdded = await addMenu(formData)
+    setMenu(menu => [...menu, plateAdded])
+    toast(`Plato [${plateAdded.plate.name}] agregado al menú exitosamente`)
+  }
 
   const elementsOnModifyMenu: MappingKeysOnModifyMenu = { _id: 'id', status: 'Disponibilidad' }
 
@@ -53,7 +70,29 @@ export const useMenu = (): UseMenu => {
       setMenu(menu => [...menu, plateAdded])
       toast(`Plato [${plateAdded.plate.name}] agregado al menú exitosamente`)
     } catch (error) {
-      const menu: MappingKeysOnSubmitMenu = { plate: 'Nombre del plato', name: 'Nombre del plato' }
+      const menu: MappingKeysOnSubmitMenu = {
+        plate: 'Nombre del plato',
+        name: 'Nombre del plato',
+        status: 'Disponibilidad'
+      }
+      toastErrorWhenSendingData(error, menu)
+    }
+  }
+  const submitMenuBySearchResult: UseMenu['submitMenuBySearchResult'] = async plateName => {
+    const formData = new FormData()
+
+    try {
+      const status: Menu['status'] = 'Disponible'
+      const plateQuery = await getPlateByName(plateName)
+      formData.set('plate', plateQuery._id)
+      formData.set('status', status)
+      await addPlateQueryToMenu(formData)
+    } catch (error) {
+      const menu: MappingKeysOnSubmitMenu = {
+        plate: 'Nombre del plato',
+        name: 'Nombre del plato',
+        status: 'Disponibilidad'
+      }
       toastErrorWhenSendingData(error, menu)
     }
   }
@@ -101,5 +140,12 @@ export const useMenu = (): UseMenu => {
       })
   }, [])
 
-  return { menu, submitMenu, switchStatusMenu, updatePlateFromMenu, deletePlateFromMenu }
+  return {
+    menu,
+    submitMenu,
+    submitMenuBySearchResult,
+    switchStatusMenu,
+    updatePlateFromMenu,
+    deletePlateFromMenu
+  }
 }
