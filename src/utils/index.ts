@@ -59,3 +59,30 @@ export const toastErrorWhenSendingData = (
     })
   } else toast(getErrorMessage(error))
 }
+
+export const splitBySearch = (target: string, search: string): string[] => {
+  const nameSplitedBySearching: string[] = []
+  let chunkChecking = ''
+
+  for (const letter of target) {
+    chunkChecking += letter
+    const chunkCheckingUpper = chunkChecking.toUpperCase()
+    const searchingUpper = search.toUpperCase()
+
+    if (chunkCheckingUpper.includes(searchingUpper)) {
+      const searchingIndexInChunkChecking = chunkCheckingUpper.indexOf(searchingUpper)
+      const matchedChunk = chunkChecking.slice(0, searchingIndexInChunkChecking)
+      const matchedSearching = chunkChecking.slice(
+        searchingIndexInChunkChecking,
+        searchingIndexInChunkChecking + searchingUpper.length
+      )
+
+      nameSplitedBySearching.push(matchedChunk)
+      nameSplitedBySearching.push(matchedSearching)
+      chunkChecking = ''
+    }
+  }
+
+  if (chunkChecking.length > 0) nameSplitedBySearching.push(chunkChecking)
+  return nameSplitedBySearching
+}

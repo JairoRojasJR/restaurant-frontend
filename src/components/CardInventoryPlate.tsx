@@ -1,30 +1,28 @@
-import Image from 'next/image'
 import { BACKEND_STREAMING_IMAGE } from '@/globalVars'
-import { type Plate } from '@/types/server'
+import Image from 'next/image'
+import { type UsePlateOptionsProps } from '@/hooks/plateOptions.hook'
+import { splitBySearch } from '@/utils'
 import { DotsVertical } from '@/icons/Dots-Vertical'
+import { type Plate } from '@/types/server'
 import { type MouseModifyPlate } from '@/types/local'
 
-interface Props {
+export interface Props {
   data: Plate
-  editing: boolean | string
-  setIdInEditing: (_id: string) => void
-  optionsOpened: boolean | string
-  setIdInOptionsOpened: (_id: string) => void
-  disableOptionsOpened: () => void
-  deletePlateFromInventoryAndMenu: MouseModifyPlate
+  platesOptions: UsePlateOptionsProps
+  deletePlate: MouseModifyPlate
+  searching?: string
 }
 
 export const CardInventoryPlate: React.FC<Props> = ({
   data,
-  editing,
-  setIdInEditing,
-  optionsOpened,
-  setIdInOptionsOpened,
-  disableOptionsOpened,
-  deletePlateFromInventoryAndMenu
+  platesOptions,
+  deletePlate,
+  searching
 }: Props) => {
-  const { _id, image } = data
+  const { _id, name, image } = data
   const imageUrl = `${BACKEND_STREAMING_IMAGE}/${image}`
+  const { editing, optionsOpened, setIdInEditing, setIdInOptionsOpened, disableOptionsOpened } =
+    platesOptions
 
   return (
     <article
@@ -61,7 +59,7 @@ export const CardInventoryPlate: React.FC<Props> = ({
               </span>
               <span
                 className='p-2 px-6 hover:bg-dark'
-                onClick={async e => await deletePlateFromInventoryAndMenu(e, data)}
+                onClick={async e => await deletePlate(e, data)}
               >
                 Eliminar
               </span>
@@ -69,7 +67,23 @@ export const CardInventoryPlate: React.FC<Props> = ({
           )}
         </aside>
       )}
-      <span className='text-center'>{data.name}</span>
+      {searching === undefined ? (
+        <span className='text-center'>{data.name}</span>
+      ) : (
+        <span>
+          {splitBySearch(name, searching).map(chunk => {
+            return (
+              <span key={crypto.randomUUID()}>
+                {chunk.toUpperCase() === searching.toUpperCase() ? (
+                  <span className='text-emerald-400'>{chunk}</span>
+                ) : (
+                  chunk
+                )}
+              </span>
+            )
+          })}
+        </span>
+      )}
     </article>
   )
 }

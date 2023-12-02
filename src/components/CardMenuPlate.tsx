@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import { BACKEND_STREAMING_IMAGE } from '@/globalVars'
+import Image from 'next/image'
 import { type Menu } from '@/types/server'
 import { TrashIcon } from '@/icons/Trash'
 import type { MouseModifyMenu } from '@/types/local'

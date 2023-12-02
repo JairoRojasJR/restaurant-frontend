@@ -1,36 +1,35 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { useShopStatus } from '@/hooks/shopstatus.hook'
 import { usePlates } from '@/hooks/plates.hook'
 import { useMenu } from '@/hooks/menu.hook'
-import PlateOrder from '@/components/PlateOrder'
-import CardMenuPlate from '@/components/CardMenuPlate'
-import { FormAddPlate, FormUpdatePlate } from '@/components/FormPlate'
-import { FormMenu } from '@/components/FormMenu'
+import { usePlateOptions } from '@/hooks/plateOptions.hook'
+import { AdminPlatesCards } from '@/components/AdminPlatesCards'
 import { Folding } from '@/components/Folding'
-import { CardInventoryPlate } from '@/components/CardInventoryPlate'
+import PlateOrder from '@/components/PlateOrder'
+import { FormAddPlate, FormSearchPlate } from '@/components/FormPlate'
+import { FormMenu } from '@/components/FormMenu'
+import CardMenuPlate from '@/components/CardMenuPlate'
 import { getErrorMessage } from '@/utils'
 import type { MouseModifyPlate, FormModifyPlate } from '@/types/local'
 
 export default function Home(): JSX.Element {
   const { shopstatus, switchStatus } = useShopStatus()
   const { plates, submitPlate, updatePlateFromInventory, deletePlateFromInventory } = usePlates()
-  const { menu, submitMenu, switchStatusMenu, updatePlateFromMenu, deletePlateFromMenu } = useMenu()
 
-  const [editing, setEditing] = useState<boolean | string>(false)
-  const [optionsOpened, setOptionsOpened] = useState<boolean | string>(false)
+  const {
+    menu,
+    submitMenu,
+    submitMenuBySearchResult,
+    switchStatusMenu,
+    updatePlateFromMenu,
+    deletePlateFromMenu
+  } = useMenu()
 
-  const setIdInEditing = (_id: string): void => {
-    disableOptionsOpened()
-    setEditing(_id)
-  }
-  const disableEditing = (): void => setEditing(false)
-
-  const setIdInOptionsOpened = (_id: string): void => setOptionsOpened(_id)
-  const disableOptionsOpened = (): void => setOptionsOpened(false)
+  const platesOptions = usePlateOptions()
+  const { disableEditing } = platesOptions
 
   const deletePlateFromInventoryAndMenu: MouseModifyPlate = async (e, plate) => {
     try {
@@ -48,7 +47,7 @@ export default function Home(): JSX.Element {
     try {
       await updatePlateFromInventory(e, plate)
       updatePlateFromMenu(plate)
-      setEditing(false)
+      disableEditing()
     } catch (error) {
       toast(getErrorMessage(error))
     }
@@ -59,44 +58,18 @@ export default function Home(): JSX.Element {
       <div className='flex w-full max-w-xl flex-col gap-5'>
         <Folding summary='Inventario' open>
           <div className='flex flex-col gap-2 bg-superdark'>
-            <form className='bg-superdark'>
-              <input
-                className='w-full border-b-2 border-violet p-2'
-                placeholder='Buscar plato del menú'
-              />
-            </form>
+            <FormSearchPlate
+              plates={plates}
+              deletePlate={deletePlateFromInventoryAndMenu}
+              updatePlate={updatePlateFromInventoryAndMenu}
+            />
             <Folding summary='Ver todos los platos'>
-              <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2 p-2'>
-                {plates.map(plate => {
-                  if (editing !== plate._id) {
-                    return (
-                      <CardInventoryPlate
-                        key={crypto.randomUUID()}
-                        data={plate}
-                        editing={editing}
-                        setIdInEditing={setIdInEditing}
-                        optionsOpened={optionsOpened}
-                        setIdInOptionsOpened={setIdInOptionsOpened}
-                        disableOptionsOpened={disableOptionsOpened}
-                        deletePlateFromInventoryAndMenu={deletePlateFromInventoryAndMenu}
-                      />
-                    )
-                  } else {
-                    return (
-                      <div
-                        key={crypto.randomUUID()}
-                        className='overflow-hidden rounded-sm border-2 border-solid border-violet'
-                      >
-                        <FormUpdatePlate
-                          plate={plate}
-                          handleSubmit={updatePlateFromInventoryAndMenu}
-                          onCancel={disableEditing}
-                        />
-                      </div>
-                    )
-                  }
-                })}
-              </div>
+              <AdminPlatesCards
+                plates={plates}
+                platesOptions={platesOptions}
+                deletePlate={deletePlateFromInventoryAndMenu}
+                runUpdate={updatePlateFromInventoryAndMenu}
+              />
             </Folding>
           </div>
         </Folding>
@@ -124,7 +97,11 @@ export default function Home(): JSX.Element {
         </div>
         <section className='flex min-w-[240px] flex-col gap-[2px] rounded-sm border-2 border-light bg-light'>
           <h2 className='bg-superdark p-2 text-center font-bold'>Menú - 2.5$ Completo</h2>
-          <FormMenu handleSubmit={submitMenu} />
+          <FormMenu
+            handleSubmit={submitMenu}
+            submitBySearchResult={submitMenuBySearchResult}
+            plates={plates}
+          />
           <PlateOrder title='Entrante - 1.5$ solo, sin segundo'>
             {menu.map(plateInMenu => {
               const { plate } = plateInMenu
