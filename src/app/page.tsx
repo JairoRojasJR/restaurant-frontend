@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { useSearchUnfocus } from '@/hooks/searchUnfocus'
 import { useShopStatus } from '@/hooks/shopstatus.hook'
 import { usePlates } from '@/hooks/plates.hook'
 import { useMenu } from '@/hooks/menu.hook'
@@ -27,6 +28,9 @@ export default function Home(): JSX.Element {
     updatePlateFromMenu,
     deletePlateFromMenu
   } = useMenu()
+
+  const searchUnfocusOptions = useSearchUnfocus()
+  const { searchUnfocus, searchUnfocusTunOn } = searchUnfocusOptions
 
   const platesOptions = usePlateOptions()
   const { disableEditing } = platesOptions
@@ -54,7 +58,10 @@ export default function Home(): JSX.Element {
   }
 
   return (
-    <main className='flex min-h-screen justify-center p-8'>
+    <main
+      className='flex min-h-screen justify-center p-8'
+      onClick={() => !searchUnfocus && searchUnfocusTunOn()}
+    >
       <div className='flex w-full max-w-xl flex-col gap-5'>
         <Folding summary='Inventario' open>
           <div className='flex flex-col gap-2 bg-superdark'>
@@ -62,6 +69,7 @@ export default function Home(): JSX.Element {
               plates={plates}
               deletePlate={deletePlateFromInventoryAndMenu}
               updatePlate={updatePlateFromInventoryAndMenu}
+              searchUnfocusOptions={searchUnfocusOptions}
             />
             <Folding summary='Ver todos los platos'>
               <AdminPlatesCards
@@ -101,6 +109,7 @@ export default function Home(): JSX.Element {
             handleSubmit={submitMenu}
             submitBySearchResult={submitMenuBySearchResult}
             plates={plates}
+            searchUnfocusOptions={searchUnfocusOptions}
           />
           <PlateOrder title='Entrante - 1.5$ solo, sin segundo'>
             {menu.map(plateInMenu => {

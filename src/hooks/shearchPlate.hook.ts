@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { type UseSearchUnfocus } from '@/hooks/searchUnfocus'
 import { type Plate } from '@/types/server'
 
 interface UseSearchPlate {
@@ -8,11 +9,16 @@ interface UseSearchPlate {
   openPanel: () => void
   closePanel: () => void
   onTyping: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleFocus: () => void
 }
 
 type PanelStatus = 'open' | 'close'
 
-export const useSearchPlate = (plates: Plate[]): UseSearchPlate => {
+export const useSearchPlate = (
+  plates: Plate[],
+  searchUnfocus: UseSearchUnfocus['searchUnfocus'],
+  searchUnfocusTunOff: UseSearchUnfocus['searchUnfocusTunOff']
+): UseSearchPlate => {
   const [searching, setSearching] = useState('')
   const [shearchResults, setSearchingResult] = useState<Plate[]>([])
   const [panelStatus, setPanelStatus] = useState<PanelStatus>('close')
@@ -35,6 +41,11 @@ export const useSearchPlate = (plates: Plate[]): UseSearchPlate => {
   const openPanel = (): void => setPanelStatus('open')
   const closePanel = (): void => setPanelStatus('close')
 
+  const handleFocus = (): void => {
+    searching.length > 0 && openPanel()
+    searchUnfocusTunOff()
+  }
+
   useEffect(() => {
     const preSearchingResult = plates.filter(plate => {
       return plate.name.toLowerCase().includes(searching.toLowerCase())
@@ -42,5 +53,9 @@ export const useSearchPlate = (plates: Plate[]): UseSearchPlate => {
     setSearchingResult(preSearchingResult)
   }, [plates])
 
-  return { searching, shearchResults, panelStatus, openPanel, closePanel, onTyping }
+  useEffect(() => {
+    if (searchUnfocus) closePanel()
+  }, [searchUnfocus])
+
+  return { searching, shearchResults, panelStatus, openPanel, closePanel, onTyping, handleFocus }
 }

@@ -41,7 +41,7 @@ export const AdminPlatesCards: React.FC<Props> = ({
           return (
             <div
               key={crypto.randomUUID()}
-              className='overflow-hidden rounded-sm border-2 border-solid border-violet'
+              className='rounded-sm border-2 border-solid border-violet'
             >
               <FormUpdatePlate plate={plate} runUpdate={runUpdate} cancelUpdate={disableEditing} />
             </div>
