@@ -1,5 +1,6 @@
 import { useSearchPlate } from '@/hooks/shearchPlate.hook'
 import { usePlateOptions } from '@/hooks/plateOptions.hook'
+import { type UseSearchUnfocus } from '@/hooks/searchUnfocus'
 import { AdminPlatesCards } from '@/components/AdminPlatesCards'
 import { type Props as CardInventoryProps } from '@/components/CardInventoryPlate'
 import { type FormModifyPlate } from '@/types/local'
@@ -89,15 +90,21 @@ interface FormSearchPlateProps {
   plates: Plate[]
   deletePlate: CardInventoryProps['deletePlate']
   updatePlate: FormUpdatePlateProps['runUpdate']
+  searchUnfocusOptions: UseSearchUnfocus
 }
 
 export const FormSearchPlate: React.FC<FormSearchPlateProps> = ({
   plates,
   deletePlate,
-  updatePlate
+  updatePlate,
+  searchUnfocusOptions
 }: FormSearchPlateProps) => {
-  const { searching, shearchResults, panelStatus, openPanel, closePanel, onTyping } =
-    useSearchPlate(plates)
+  const { searchUnfocus, searchUnfocusTunOff } = searchUnfocusOptions
+  const { searching, shearchResults, panelStatus, onTyping, handleFocus } = useSearchPlate(
+    plates,
+    searchUnfocus,
+    searchUnfocusTunOff
+  )
   const plateOptions = usePlateOptions()
   const { disableEditing } = plateOptions
 
@@ -107,15 +114,17 @@ export const FormSearchPlate: React.FC<FormSearchPlateProps> = ({
   }
 
   return (
-    <section className='flex flex-col gap-2 rounded-sm bg-superdark'>
-      <div className='relative m-auto w-full self-center'>
+    <section
+      className='flex flex-col gap-2 rounded-sm bg-superdark'
+      onClick={e => e.stopPropagation()}
+    >
+      <div className='relative z-20 m-auto w-full self-center'>
         <input
           className='w-full border-b-2 border-violet p-2'
           name='plate'
           placeholder='Buscar plato en el inventario'
           autoComplete='off'
-          onFocus={() => searching.length > 0 && openPanel()}
-          onBlur={closePanel}
+          onFocus={handleFocus}
           onChange={onTyping}
         />
         {panelStatus === 'open' && (

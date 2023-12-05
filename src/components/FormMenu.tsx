@@ -4,20 +4,25 @@ import Image from 'next/image'
 import { useSearchPlate } from '@/hooks/shearchPlate.hook'
 import { splitBySearch } from '@/utils'
 import { type Plate } from '@/types/server'
+import { type UseSearchUnfocus } from '@/hooks/searchUnfocus'
 
 interface Props {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => unknown
   submitBySearchResult: (plateName: string) => unknown
   plates: Plate[]
+  searchUnfocusOptions: UseSearchUnfocus
 }
 
 export const FormMenu: React.FC<Props> = ({
   handleSubmit,
   submitBySearchResult,
-  plates
+  plates,
+  searchUnfocusOptions
 }: Props) => {
-  const { searching, shearchResults, panelStatus, openPanel, closePanel, onTyping } =
-    useSearchPlate(plates)
+  const { searchUnfocus, searchUnfocusTunOff } = searchUnfocusOptions
+  const { searching, shearchResults, panelStatus, closePanel, onTyping, handleFocus } =
+    useSearchPlate(plates, searchUnfocus, searchUnfocusTunOff)
+
   const formRef = useRef<HTMLFormElement | null>(null)
 
   const submitPlate = (e: React.MouseEvent<HTMLElement>, plateName: string): void => {
@@ -31,6 +36,7 @@ export const FormMenu: React.FC<Props> = ({
       ref={formRef}
       className='flex flex-col gap-2 rounded-sm bg-superdark p-2'
       onSubmit={handleSubmit}
+      onClick={e => e.stopPropagation()}
     >
       <input name='status' defaultValue='Disponible' hidden />
       <div className='relative m-auto w-full self-center'>
@@ -39,8 +45,7 @@ export const FormMenu: React.FC<Props> = ({
           name='plate'
           placeholder='Agregar plato al menú'
           autoComplete='off'
-          onFocus={() => searching.length > 0 && openPanel()}
-          onBlur={closePanel}
+          onFocus={handleFocus}
           onChange={onTyping}
         />
         {panelStatus === 'open' && (
@@ -53,7 +58,7 @@ export const FormMenu: React.FC<Props> = ({
               return (
                 <article
                   key={crypto.randomUUID()}
-                  className='flex cursor-pointer items-center gap-2 bg-superdark'
+                  className='flex cursor-pointer items-center bg-superdark'
                   onClick={e => submitPlate(e, name)}
                 >
                   <Image
@@ -61,11 +66,11 @@ export const FormMenu: React.FC<Props> = ({
                     alt={name}
                     src={imageUrl}
                     loader={data => `${imageUrl}?width=${data.width}`}
-                    width={75}
-                    height={75}
+                    width={100}
+                    height={125}
                     sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
                   />
-                  <span>
+                  <span className='truncate p-2'>
                     {splitBySearch(name, searching).map(chunk => {
                       return (
                         <span key={crypto.randomUUID()}>
