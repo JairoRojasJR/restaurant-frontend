@@ -17,6 +17,6 @@ export const switchShopStatus = async (status: ShopStatus | ''): Promise<Company
   if (status === 'Abierto') newStatus = 'Cerrado'
   else newStatus = 'Abierto'
 
-  const req = await axios.put(companyPath, { status: newStatus })
+  const req = await axios.put(companyPath, { status: newStatus }, { withCredentials: true })
   return (await req.data) as Company
 }

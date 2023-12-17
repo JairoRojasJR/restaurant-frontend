@@ -24,7 +24,35 @@ export interface SchemaError extends ResponseMessage {
 }
 
 export type ResponseMessageOrError = ResponseMessage & ResponseError
+
+export interface SessionCookie {
+  originalMaxAge: number
+  expires: string | Date
+  secure: boolean
+  httpOnly: boolean
+  path: string
+  sameSite: boolean | 'lax' | 'strict' | 'none'
+}
+
 // ----------
+
+export interface LoginResponse extends ResponseMessage {
+  session: {
+    id: string
+    cookie: SessionCookie
+  }
+}
+
+// ----------
+
+export interface Login {
+  username: string
+  password: string
+}
+
+export interface AuthStatus {
+  authenticated: boolean
+}
 
 export interface Status {
   is: ShopStatus

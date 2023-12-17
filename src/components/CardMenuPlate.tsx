@@ -1,16 +1,23 @@
 import { BACKEND_STREAMING_IMAGE } from '@/globalVars'
 import Image from 'next/image'
-import { type Menu } from '@/types/server'
+import { runWhithAuth } from '@/utils'
 import { TrashIcon } from '@/icons/Trash'
 import type { MouseModifyMenu } from '@/types/local'
+import { type Menu } from '@/types/server'
 
 interface Props {
   menu: Menu
   switchStatus: MouseModifyMenu
   deletePlateFromMenu: MouseModifyMenu
+  authenticated: boolean
 }
 
-export default function Plate({ menu, switchStatus, deletePlateFromMenu }: Props): JSX.Element {
+export default function Plate({
+  menu,
+  switchStatus,
+  deletePlateFromMenu,
+  authenticated
+}: Props): JSX.Element {
   const { status, plate } = menu
   const { name, image } = plate
   const imageUrl = `${BACKEND_STREAMING_IMAGE}/${image}`
@@ -24,22 +31,32 @@ export default function Plate({ menu, switchStatus, deletePlateFromMenu }: Props
         className={`grid cursor-pointer grid-cols-[50px_minmax(100px,1fr)] items-center gap-3 rounded-sm p-2 ${
           unavailable ? 'bg-slate-700' : ''
         }`}
-        onClick={async e => {
-          await switchStatus(e, menu)
-        }}
+        onClick={e =>
+          runWhithAuth(async () => {
+            await switchStatus(e, menu)
+          }, authenticated)()
+        }
       >
-        <aside
-          className='rounded-full'
-          onClick={async e => {
-            await deletePlateFromMenu(e, menu)
-          }}
+        {authenticated && (
+          <aside
+            className='rounded-full'
+            onClick={e =>
+              runWhithAuth(async () => {
+                await deletePlateFromMenu(e, menu)
+              }, authenticated)()
+            }
+          >
+            <TrashIcon
+              className='rounded-full p-2 text-5xl hover:bg-red-400 hover:stroke-red-900'
+              stroke='#fff'
+            />
+          </aside>
+        )}
+        <div
+          className={`flex flex-col gap-2 sm:flex-row sm:items-center ${
+            !authenticated ? 'col-span-2' : ''
+          }`}
         >
-          <TrashIcon
-            className='rounded-full p-2 hover:bg-red-400 hover:stroke-red-900'
-            stroke='#fff'
-          />
-        </aside>
-        <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
           <div className='relative shrink-0 overflow-hidden rounded-sm'>
             <Image
               className='object-cover'

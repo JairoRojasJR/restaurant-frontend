@@ -1,10 +1,10 @@
 import { BACKEND_STREAMING_IMAGE } from '@/globalVars'
 import { useRef } from 'react'
 import Image from 'next/image'
+import { type UseSearchUnfocus } from '@/hooks/searchUnfocus'
 import { useSearchPlate } from '@/hooks/shearchPlate.hook'
 import { splitBySearch } from '@/utils'
 import { type Plate } from '@/types/server'
-import { type UseSearchUnfocus } from '@/hooks/searchUnfocus'
 
 interface Props {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => unknown
@@ -43,7 +43,7 @@ export const FormMenu: React.FC<Props> = ({
         <input
           className='w-full border-b-2 border-violet p-2'
           name='plate'
-          placeholder='Agregar plato al menú'
+          placeholder='Sopa de macaco'
           autoComplete='off'
           onFocus={handleFocus}
           onChange={onTyping}
@@ -89,7 +89,9 @@ export const FormMenu: React.FC<Props> = ({
           </aside>
         )}
       </div>
-      <button>Agregar</button>
+      <button className='rounded-sm border-2 border-violet bg-superdark p-2 hover:bg-dark'>
+        Agregar al menú
+      </button>
     </form>
   )
 }

@@ -1,7 +1,9 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { useAuthContext } from '@/context/auth.context'
 import { useSearchUnfocus } from '@/hooks/searchUnfocus'
 import { useShopStatus } from '@/hooks/shopstatus.hook'
 import { usePlates } from '@/hooks/plates.hook'
@@ -13,12 +15,15 @@ import PlateOrder from '@/components/PlateOrder'
 import { FormAddPlate, FormSearchPlate } from '@/components/FormPlate'
 import { FormMenu } from '@/components/FormMenu'
 import CardMenuPlate from '@/components/CardMenuPlate'
-import { getErrorMessage } from '@/utils'
+import { getErrorMessage, runWhithAuth } from '@/utils'
+import { Logout } from '@/icons/Logout'
 import type { MouseModifyPlate, FormModifyPlate } from '@/types/local'
 
 export default function Home(): JSX.Element {
+  const { authenticated, logout } = useAuthContext()
   const { shopstatus, switchStatus } = useShopStatus()
   const { plates, submitPlate, updatePlateFromInventory, deletePlateFromInventory } = usePlates()
+  const router = useRouter()
 
   const {
     menu,
@@ -63,29 +68,11 @@ export default function Home(): JSX.Element {
       onClick={() => !searchUnfocus && searchUnfocusTunOn()}
     >
       <div className='flex w-full max-w-xl flex-col gap-5'>
-        <Folding summary='Inventario' open>
-          <div className='flex flex-col gap-2 bg-superdark'>
-            <FormSearchPlate
-              plates={plates}
-              deletePlate={deletePlateFromInventoryAndMenu}
-              updatePlate={updatePlateFromInventoryAndMenu}
-              searchUnfocusOptions={searchUnfocusOptions}
-            />
-            <Folding summary='Ver todos los platos'>
-              <AdminPlatesCards
-                plates={plates}
-                platesOptions={platesOptions}
-                deletePlate={deletePlateFromInventoryAndMenu}
-                runUpdate={updatePlateFromInventoryAndMenu}
-              />
-            </Folding>
-          </div>
-        </Folding>
-        <Folding summary='Agregar plato al inventario'>
-          <FormAddPlate handleSubmit={submitPlate} />
-        </Folding>
-        <div className='flex items-center justify-center gap-2 rounded-md bg-superdark px-8  py-2 font-bold italic'>
-          <div className='relative h-9 w-9 shrink-0 object-cover'>
+        <header className='flex items-center justify-center gap-2 rounded-md bg-superdark px-8  py-2 font-bold italic'>
+          <div
+            className='relative h-9 w-9 shrink-0 object-cover'
+            onDoubleClick={runWhithAuth(() => router.push('/login'), authenticated, true)}
+          >
             <Image
               alt='chef-hat'
               src='/favicon.ico'
@@ -93,24 +80,56 @@ export default function Home(): JSX.Element {
               sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
             />
           </div>
-          <h1 className='text-center leading-none'>Restaurante SF</h1>
+          <h1 className='text-center leading-none'>Restaurante SF🚀</h1>
           <span
             className={`cursor-pointer rounded-sm px-3 py-1 ${
               shopstatus === 'Abierto' ? 'bg-emerald-400' : 'bg-red-400'
             }`}
-            onClick={switchStatus}
+            onClick={runWhithAuth(switchStatus, authenticated)}
           >
             {shopstatus}
           </span>
-        </div>
+          {authenticated && (
+            <span className='cursor-pointer rounded-full bg-dark p-1 text-3xl' onClick={logout}>
+              <Logout />
+            </span>
+          )}
+        </header>
+        {authenticated && (
+          <section className='flex flex-col gap-2'>
+            <Folding summary='Inventario'>
+              <div className='flex flex-col gap-2 bg-superdark'>
+                <FormSearchPlate
+                  plates={plates}
+                  deletePlate={deletePlateFromInventoryAndMenu}
+                  updatePlate={updatePlateFromInventoryAndMenu}
+                  searchUnfocusOptions={searchUnfocusOptions}
+                />
+                <Folding summary='Ver todos los platos'>
+                  <AdminPlatesCards
+                    plates={plates}
+                    platesOptions={platesOptions}
+                    deletePlate={deletePlateFromInventoryAndMenu}
+                    runUpdate={updatePlateFromInventoryAndMenu}
+                  />
+                </Folding>
+              </div>
+            </Folding>
+            <Folding summary='Agregar plato al inventario'>
+              <FormAddPlate handleSubmit={submitPlate} />
+            </Folding>
+          </section>
+        )}
         <section className='flex min-w-[240px] flex-col gap-[2px] rounded-sm border-2 border-light bg-light'>
           <h2 className='bg-superdark p-2 text-center font-bold'>Menú - 2.5$ Completo</h2>
-          <FormMenu
-            handleSubmit={submitMenu}
-            submitBySearchResult={submitMenuBySearchResult}
-            plates={plates}
-            searchUnfocusOptions={searchUnfocusOptions}
-          />
+          {authenticated && (
+            <FormMenu
+              handleSubmit={submitMenu}
+              submitBySearchResult={submitMenuBySearchResult}
+              plates={plates}
+              searchUnfocusOptions={searchUnfocusOptions}
+            />
+          )}
           <PlateOrder title='Entrante - 1.5$ solo, sin segundo'>
             {menu.map(plateInMenu => {
               const { plate } = plateInMenu
@@ -121,6 +140,7 @@ export default function Home(): JSX.Element {
                   menu={plateInMenu}
                   switchStatus={switchStatusMenu}
                   deletePlateFromMenu={deletePlateFromMenu}
+                  authenticated={authenticated}
                 />
               )
             })}
@@ -135,6 +155,7 @@ export default function Home(): JSX.Element {
                   menu={plateInMenu}
                   switchStatus={switchStatusMenu}
                   deletePlateFromMenu={deletePlateFromMenu}
+                  authenticated={authenticated}
                 />
               )
             })}

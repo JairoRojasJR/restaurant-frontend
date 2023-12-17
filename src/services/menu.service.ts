@@ -9,18 +9,18 @@ export const getMenu = async (): Promise<Menu[]> => {
 }
 
 export const addMenu = async (formData: FormData): Promise<Menu> => {
-  const req = await axios.post(menuPath, formData)
+  const req = await axios.post(menuPath, formData, { withCredentials: true })
   return (await req.data) as Menu
 }
 
 export const updateMenu = async (_id: string, menu: Partial<Menu>): Promise<Menu> => {
   const url = insertIdInUrl(_id, menuPath)
-  const req = await axios.put(url, menu)
+  const req = await axios.put(url, menu, { withCredentials: true })
   return (await req.data) as Menu
 }
 
 export const deleteMenu = async (_id: string): Promise<Menu> => {
   const url = insertIdInUrl(_id, menuPath)
-  const req = await axios.delete(url)
+  const req = await axios.delete(url, { withCredentials: true })
   return (await req.data) as Menu
 }

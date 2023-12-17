@@ -13,18 +13,18 @@ export const getPlate = async (params?: URLSearchParams): Promise<Plate | Plate[
 }
 
 export const addPlate = async (formData: FormData): Promise<Plate> => {
-  const req = await axios.post(platesPath, formData)
+  const req = await axios.post(platesPath, formData, { withCredentials: true })
   return (await req.data) as Plate
 }
 
 export const updatePlate = async (_id: string, formData: FormData): Promise<Plate> => {
   const url = insertIdInUrl(_id, platesPath)
-  const req = await axios.put(url, formData)
+  const req = await axios.put(url, formData, { withCredentials: true })
   return (await req.data) as Plate
 }
 
 export const deletePlate = async (_id: string): Promise<Plate> => {
   const url = insertIdInUrl(_id, platesPath)
-  const req = await axios.delete(url)
+  const req = await axios.delete(url, { withCredentials: true })
   return (await req.data) as Plate
 }

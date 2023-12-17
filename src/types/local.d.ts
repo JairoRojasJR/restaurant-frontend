@@ -15,4 +15,5 @@ type FormModifyPlate = ModifyPlate<FormEvt>
 type ModifyMenu<T> = (e: T, menu: Menu) => Promise<void>
 type MouseModifyMenu = ModifyMenu<MouseEvt>
 
-type SubmitAsync = (e: React.FormEvent<HTMLFormElement>) => Promise<void>
+type SubmitAsync = (e: FormEvt) => Promise<void>
+type MouseAsync = (e: MouseEvt) => Promise<void>

@@ -29,15 +29,15 @@ export const FormPlate: React.FC<FormPlateProps> = ({
       encType='multipart/form-data'
     >
       <section className='flex flex-col'>
-        <label>Nombre del plato</label>
-        <input className='border-b-2 border-violet' name='name' defaultValue={plate?.name} />
+        <label className='px-2 text-slate-300'>Nombre del plato</label>
+        <input className='border-b-2 border-violet p-2' name='name' defaultValue={plate?.name} />
       </section>
       <section className='flex flex-col'>
-        <label>Imagen</label>
-        <input className='border-b-2 border-violet' name='image' type='file' />
+        <label className='px-2 text-slate-300'>Imagen</label>
+        <input className='border-b-2 border-violet p-2' name='image' type='file' />
       </section>
       <section className='flex flex-col'>
-        <label>Tipo de orden</label>
+        <label className='px-2 text-slate-300'>Tipo de orden</label>
         <select className='border-b-2 border-violet p-2' name='order' defaultValue={plate?.order}>
           {typeOrderOptions.map(typeOrder => {
             return (

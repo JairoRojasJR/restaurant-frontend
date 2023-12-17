@@ -86,3 +86,14 @@ export const splitBySearch = (target: string, search: string): string[] => {
   if (chunkChecking.length > 0) nameSplitedBySearching.push(chunkChecking)
   return nameSplitedBySearching
 }
+
+export const runWhithAuth = (
+  callback: () => unknown,
+  authenticated: boolean,
+  runOnNotAuth?: boolean
+): (() => unknown) => {
+  const onAuth = runOnNotAuth !== true && authenticated
+  const onNotAuth = runOnNotAuth === true && !authenticated
+  if (onAuth || onNotAuth) return callback
+  return () => {}
+}
