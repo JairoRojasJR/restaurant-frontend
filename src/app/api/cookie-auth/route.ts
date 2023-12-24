@@ -19,6 +19,10 @@ export async function POST(req: NextRequest): Promise<Response> {
 }
 
 export async function DELETE(req: NextRequest): Promise<Response> {
+  const sessionCookie = req.cookies.get('sessionId')
+  if (sessionCookie === undefined) {
+    return new Response(JSON.stringify({ message: 'No hay sesión frontend registrada' }))
+  }
   const cookieOptions = {
     expires: new Date('Thu, 01 Jan 1970 00:00:00 GMT'),
     path: '/'

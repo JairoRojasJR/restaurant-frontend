@@ -5,6 +5,7 @@ import { status, login as runLogin, logout as runLogout } from '@/services/auth.
 import { getErrorMessage, toastErrorWhenSendingData } from '@/utils'
 import { type Login } from '@/types/server'
 import type { MouseAsync, SubmitAsync } from '@/types/local'
+import axios from 'axios'
 
 export interface UseAuth {
   authenticated: boolean
@@ -50,7 +51,11 @@ export const useAuth = (): UseAuth => {
   useEffect(() => {
     status()
       .then(data => {
-        setAuthenticated(data.authenticated)
+        const { authenticated } = data
+        if (!authenticated) {
+          axios.delete('/api/cookie-auth').catch(e => toast(getErrorMessage(e)))
+        }
+        setAuthenticated(authenticated)
       })
       .catch(e => toast(getErrorMessage(e)))
   }, [])
