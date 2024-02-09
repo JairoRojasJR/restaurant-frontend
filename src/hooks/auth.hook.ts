@@ -1,11 +1,11 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 import { toast } from 'sonner'
-import { status, login as runLogin, logout as runLogout } from '@/services/auth.service'
+import { authStatus, login as runLogin, logout as runLogout } from '@/services/auth.service'
 import { getErrorMessage, toastErrorWhenSendingData } from '@/utils'
 import { type Login } from '@/types/server'
 import type { MouseAsync, SubmitAsync } from '@/types/local'
-import axios from 'axios'
 
 export interface UseAuth {
   authenticated: boolean
@@ -17,8 +17,8 @@ type ElementsLogin = {
   [T in keyof Login]: string
 }
 
-export const useAuth = (): UseAuth => {
-  const [authenticated, setAuthenticated] = useState<UseAuth['authenticated']>(false)
+export const useAuth = (initializator: UseAuth['authenticated']): UseAuth => {
+  const [authenticated, setAuthenticated] = useState<UseAuth['authenticated']>(initializator)
   const router = useRouter()
 
   const login: UseAuth['login'] = async e => {
@@ -49,13 +49,11 @@ export const useAuth = (): UseAuth => {
   }
 
   useEffect(() => {
-    status()
+    authStatus()
       .then(data => {
-        const { authenticated } = data
-        if (!authenticated) {
+        if (!data.authenticated) {
           axios.delete('/api/cookie-auth').catch(e => toast(getErrorMessage(e)))
         }
-        setAuthenticated(authenticated)
       })
       .catch(e => toast(getErrorMessage(e)))
   }, [])

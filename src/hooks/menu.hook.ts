@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { addMenu, deleteMenu, getMenu, updateMenu } from '@/services/menu.service'
 import { getPlate } from '@/services/plate.service'
@@ -36,8 +36,8 @@ const getPlateByName = async (plateName: string): Promise<Plate> => {
   return plateQuery
 }
 
-export const useMenu = (): UseMenu => {
-  const [menu, setMenu] = useState<PlatesInMenu>([])
+export const useMenu = (initializator: UseMenu['menu']): UseMenu => {
+  const [menu, setMenu] = useState<PlatesInMenu>(initializator)
 
   const addPlateQueryToMenu = async (formData: FormData): Promise<void> => {
     const plateAdded = await addMenu(formData)
@@ -129,16 +129,6 @@ export const useMenu = (): UseMenu => {
       toastErrorWhenSendingData(error, elementsOnModifyMenu)
     }
   }
-
-  useEffect(() => {
-    getMenu()
-      .then(data => {
-        setMenu(data)
-      })
-      .catch(e => {
-        toast(getErrorMessage(e))
-      })
-  }, [])
 
   return {
     menu,

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { authPath } from '@/consts'
 import type { AuthStatus, LoginResponse, ResponseMessage } from '@/types/server'
 
-export const status = async (): Promise<AuthStatus> => {
+export const authStatus = async (): Promise<AuthStatus> => {
   const url = `${authPath}/status`
   const req = await axios.get(url, { withCredentials: true })
   return (await req.data) as AuthStatus

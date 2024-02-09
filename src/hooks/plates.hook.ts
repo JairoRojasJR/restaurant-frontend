@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
-import { addPlate, deletePlate, getPlate, updatePlate } from '@/services/plate.service'
-import { getErrorMessage, toastErrorWhenSendingData } from '@/utils'
+import { addPlate, deletePlate, updatePlate } from '@/services/plate.service'
+import { toastErrorWhenSendingData } from '@/utils'
 import type { Plate } from '@/types/server'
 import type { SubmitAsync, MouseModifyPlate, FormModifyPlate } from '@/types/local'
 
@@ -20,8 +20,8 @@ type ElementsPlate = {
   [K in keyof Plate]: string
 }
 
-export const usePlates = (): UsePlates => {
-  const [plates, setPlates] = useState<Plates>([])
+export const usePlates = (initializator: UsePlates['plates']): UsePlates => {
+  const [plates, setPlates] = useState<Plates>(initializator)
 
   const crudeElements: CrudeElementsPlate = {
     name: 'Nombre del plato',
@@ -77,17 +77,6 @@ export const usePlates = (): UsePlates => {
       toastErrorWhenSendingData(error, elementsOnModifyPlate)
     }
   }
-
-  useEffect(() => {
-    getPlate()
-      .then(data => {
-        if (!Array.isArray(data)) {
-          throw new Error('[ERROR INTERNO: getPlate] tipo de dato inesperado')
-        }
-        setPlates(data)
-      })
-      .catch(e => toast(getErrorMessage(e)))
-  }, [])
 
   return { plates, submitPlate, updatePlateFromInventory, deletePlateFromInventory }
 }

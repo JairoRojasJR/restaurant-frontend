@@ -1,19 +1,26 @@
 import '@/globalVars'
 import './globals.css'
-import type { Metadata } from 'next'
+import { type Metadata } from 'next'
 import { Toaster } from 'sonner'
 import { AuthContextProvider } from '@/context/auth.context'
+import { frontendAuthStatus } from '@/services/server.service'
 
 export const metadata: Metadata = {
   title: 'Restaurante-SF',
   description: 'Sitio web oficial del Restaurante-SF'
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }): JSX.Element {
+export default async function RootLayout({
+  children
+}: {
+  children: React.ReactNode
+}): Promise<JSX.Element> {
+  const { authenticated } = await frontendAuthStatus()
+
   return (
     <html lang='es'>
       <body>
-        <AuthContextProvider>{children}</AuthContextProvider>
+        <AuthContextProvider authenticated={authenticated}>{children}</AuthContextProvider>
         <Toaster />
       </body>
     </html>

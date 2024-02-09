@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
-import { getShopStatus, switchShopStatus } from '@/services/company.service'
+import { switchShopStatus } from '@/services/company.service'
 import { getErrorMessage } from '@/utils'
 import type { ShopStatus } from '@/types/server'
 
 interface UseShopStatus {
-  shopstatus: ShopStatus | ''
+  shopstatus: ShopStatus
   switchStatus: () => Promise<void>
 }
 
-export const useShopStatus = (): UseShopStatus => {
-  const [status, setStatus] = useState<UseShopStatus['shopstatus']>('')
+export const useShopStatus = (initializator: UseShopStatus['shopstatus']): UseShopStatus => {
+  const [status, setStatus] = useState<UseShopStatus['shopstatus']>(initializator)
 
   const switchStatus = async (): Promise<void> => {
     try {
@@ -20,16 +20,6 @@ export const useShopStatus = (): UseShopStatus => {
       toast(getErrorMessage(error))
     }
   }
-
-  useEffect(() => {
-    getShopStatus()
-      .then(data => {
-        setStatus(data.is)
-      })
-      .catch(e => {
-        toast(getErrorMessage(e))
-      })
-  }, [])
 
   return { shopstatus: status, switchStatus }
 }
